@@ -44,7 +44,7 @@ export function insertBestPrice(pricingUpdate: PriceUpdate) {
 export function searchBestPrice(sku: string) {
   const dbSKU = MockRedis.bestPrices[sku]
 
-  if (dbSKU) {
+  if (dbSKU != null) {
     return dbSKU
   }
 
