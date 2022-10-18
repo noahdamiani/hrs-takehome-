@@ -15,7 +15,9 @@ export function insertBestPrice(pricingUpdate: PriceUpdate) {
   const dbSKU = MockRedis.bestPrices[pricingUpdate.sku]
 
   // SKU does not exist. Important that we check == null for the case !x where x = 0
-  if (dbSKU == null) return PriceUpdateResSchema.Enum.SKU_NOT_FOUND
+  if (dbSKU == null) {
+    return PriceUpdateResSchema.Enum.SKU_NOT_FOUND
+  }
 
   // Price in DB is better, or the same
   if (dbSKU <= pricingUpdate.price) {
@@ -30,7 +32,8 @@ export function insertBestPrice(pricingUpdate: PriceUpdate) {
 
   // Historical storage, could be analytic provider such as segment, could be nosql/sql db
   // The point here is that the activity to track updates is less urgent, so we will add
-  // the task to a background process.
+  // the task to a background process. Note: this block could be moved to the top in
+  // order to track all updates, even failed attempts.
   mockQueue.add(() => {
     MockNoSQL.pricingUpdates.push(pricingUpdate)
   })
